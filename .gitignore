@@ -1,0 +1,7 @@
+.idea
+*.log
+notionTotistory
+*.retry
+*.tar.gz
+go.sum
+download
