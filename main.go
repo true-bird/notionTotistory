@@ -7,6 +7,10 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fedesog/webdriver"
 	"github.com/true-bird/notionTotistory/notion"
+
+	//"github.com/fedesog/webdriver"
+	"github.com/true-bird/notionTotistory/config"
+	//"github.com/true-bird/notionTotistory/notion"
 	"github.com/true-bird/notionTotistory/tistory"
 	"github.com/true-bird/notionTotistory/util"
 	"io"
@@ -21,21 +25,19 @@ import (
 )
 
 var (
-	chromeDriver = "./chromedriver"
-	blogName     = ""
-	accessToken  = ""
-	htmlDir      = "download"
-	targetDir    = ""
+	cfg config.Config
 )
 
 func main() {
+	_cfg, err := LoadConfig()
+	cfg = _cfg
 	nowTime := time.Now()
-	c := notion.New()
+	c := notion.New(&cfg.NotionPage)
 	pageList := c.SearchPageList()
 
 	chromedriver := webdriver.NewChromeDriver("./chromedriver")
 	defer chromedriver.Stop()
-	err := chromedriver.Start()
+	err = chromedriver.Start()
 	if err != nil {
 		panic(err)
 	}
@@ -47,23 +49,38 @@ func main() {
 		panic(err)
 	}
 
-	notion.Login(session)
+	notion.Login(&cfg.Login,session)
 	notion.ExportPages(pageList, session)
 
 	downloadHtml(nowTime)
 
 }
 
+func LoadConfig() (config.Config, error) {
+	var c config.Config
+	file, err := os.Open("./config/sample.json")
+	defer file.Close()
+	if err != nil {
+		panic(err)
+	}
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&c)
+	if err != nil {
+		panic(err)
+	}
+	return c, err
+}
+
 func downloadHtml(nowTime time.Time) {
-	files, err := ioutil.ReadDir(targetDir)
+	files, err := ioutil.ReadDir(cfg.Etc.TargetDir)
 	if err != nil {
 		panic(err)
 	}
 	for _, file := range files {
 		if strings.HasPrefix(file.Name(), "Export") {
 			if nowTime.Before(file.ModTime()) {
-				filePath := fmt.Sprintf("%v/%v", targetDir, file.Name())
-				unzip, err := util.Unzip(filePath, htmlDir)
+				filePath := fmt.Sprintf("%v/%v", cfg.Etc.TargetDir, file.Name())
+				unzip, err := util.Unzip(filePath, cfg.Etc.HtmlDir)
 				if err != nil {
 					panic(err)
 				}
@@ -86,7 +103,7 @@ func post(filePath string) {
 	if err != nil {
 		panic(err)
 	}
-	client := tistory.New()
+	client := tistory.New(&cfg.Tistory)
 
 	doc.Find("meta").Remove()
 	doc.Find("title").Remove()
@@ -119,7 +136,7 @@ func post(filePath string) {
 
 	article.Find("code").Each(func(i int, code *goquery.Selection) {
 		switch {
-		case category == "자바":
+		case category == "자바" || category == "알고리즘":
 			code.AddClass("java")
 		case category == "go":
 			code.AddClass("go")
@@ -135,7 +152,7 @@ func post(filePath string) {
 		if err != nil {
 			return
 		}
-		imagePath = fmt.Sprintf("%v/%v", htmlDir, decodedValue)
+		imagePath = fmt.Sprintf("%v/%v", cfg.Etc.HtmlDir, decodedValue)
 		imgUrl, err := UploadImage(imagePath)
 		if err != nil {
 			return
@@ -175,8 +192,8 @@ func UploadImage(filePath string) (imgUrl string, err error) {
 	writer.Close()
 
 	params := url.Values{
-		"access_token": {accessToken},
-		"blogName":     {blogName},
+		"access_token": {cfg.Tistory.AccessToken},
+		"blogName":     {cfg.Tistory.BlogName},
 		"output":       {"json"},
 	}
 	url := "https://www.tistory.com/apis/post/attach?" + params.Encode()

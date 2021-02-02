@@ -2,25 +2,21 @@ package tistory
 
 import (
 	"encoding/json"
+	"github.com/true-bird/notionTotistory/config"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-)
-
-var (
-	blogName    = ""
-	accessToken = ""
 )
 
 type Client struct {
 	values url.Values
 }
 
-func New() *Client {
+func New(tistory *config.Tistory) *Client {
 	return &Client{
 		url.Values{
-			"access_token": {accessToken},
-			"blogName":     {blogName},
+			"access_token": {tistory.AccessToken},
+			"blogName":     {tistory.BlogName},
 			"output":       {"json"},
 		},
 	}

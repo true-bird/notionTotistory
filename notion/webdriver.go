@@ -5,18 +5,17 @@ import (
 	"github.com/fedesog/webdriver"
 	"github.com/kjk/notionapi"
 	"github.com/tebeka/selenium"
+	"github.com/true-bird/notionTotistory/config"
 	"strings"
 	"time"
 )
 
 var (
 	notionLoginUrl = "https://www.notion.so/login"
-	notionId       = ""
-	notionPw       = ""
 	notionUrl      = "https://www.notion.so/"
 )
 
-func Login(session *webdriver.Session) {
+func Login(login *config.Login, session *webdriver.Session) {
 	err := session.Url(notionLoginUrl)
 	if err != nil {
 		panic(err)
@@ -24,12 +23,12 @@ func Login(session *webdriver.Session) {
 	// login
 	time.Sleep(time.Second * 1)
 	email, err := session.FindElement(selenium.ByCSSSelector, "#notion-email-input-1")
-	email.SendKeys(notionId)
+	email.SendKeys(login.NotionId)
 	btn, err := session.FindElement(selenium.ByCSSSelector, "#notion-app > div > div:nth-child(1) > main > section > div > div > div > div.notion-login > div:nth-child(3) > form > div:nth-child(5)")
 	btn.Click()
 	time.Sleep(time.Second * 2)
 	password, err := session.FindElement(selenium.ByCSSSelector, "#notion-password-input-2")
-	password.SendKeys(notionPw)
+	password.SendKeys(login.NotionPw)
 	btn, err = session.FindElement(selenium.ByCSSSelector, "#notion-app > div > div:nth-child(1) > main > section > div > div > div > div.notion-login > div:nth-child(3) > form > div:nth-child(6)")
 	btn.Click()
 	time.Sleep(time.Second * 3)

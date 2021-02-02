@@ -5,3 +5,4 @@ notionTotistory
 *.tar.gz
 go.sum
 download
+config/local.json

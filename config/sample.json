@@ -1,0 +1,21 @@
+{
+  "notionpage": {
+    "token_v2": "",
+    "notion_loginurl": "",
+    "notion_url": "",
+    "table_pageid": ""
+  },
+  "tistory": {
+    "blogname": "",
+    "accesstoken": ""
+  },
+  "login": {
+    "notion_id": "",
+    "notion_pw": ""
+  },
+  "etc": {
+    "chromedriver": "",
+    "html_dir": "",
+    "target_dir": ""
+  }
+}
