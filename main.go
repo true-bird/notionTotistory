@@ -58,7 +58,7 @@ func main() {
 
 func LoadConfig() (config.Config, error) {
 	var c config.Config
-	file, err := os.Open("./config/sample.json")
+	file, err := os.Open("./config/local.json")
 	defer file.Close()
 	if err != nil {
 		panic(err)
