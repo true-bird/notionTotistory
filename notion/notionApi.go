@@ -18,7 +18,7 @@ func New(page *config.NotionPage) *Client {
 		},
 	}
 }
-// prod
+// prod 2
 func (client *Client) SearchPageList() (pages []*notionapi.Block) {
 
 	page, err := client.DownloadPage(client.notionPage.TablePageId)
