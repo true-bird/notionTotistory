@@ -5,9 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/fedesog/webdriver"
-	"github.com/true-bird/notionTotistory/notion"
-
 	//"github.com/fedesog/webdriver"
 	"github.com/true-bird/notionTotistory/config"
 	//"github.com/true-bird/notionTotistory/notion"
@@ -31,26 +28,26 @@ var (
 func main() {
 	_cfg, err := LoadConfig()
 	cfg = _cfg
-	nowTime := time.Now()
-	c := notion.New(&cfg.NotionPage)
-	pageList := c.SearchPageList()
+	nowTime := time.Now().Truncate(time.Minute*300)
+	//c := notion.New(&cfg.NotionPage)
+	//pageList := c.SearchPageList()
 
-	chromedriver := webdriver.NewChromeDriver("./chromedriver")
-	defer chromedriver.Stop()
-	err = chromedriver.Start()
+	//chromedriver := webdriver.NewChromeDriver("./chromedriver")
+	//defer chromedriver.Stop()
+	//err = chromedriver.Start()
 	if err != nil {
 		panic(err)
 	}
-	desired := webdriver.Capabilities{"Platform": "Mac"}
-	required := webdriver.Capabilities{}
-	session, err := chromedriver.NewSession(desired, required)
-	defer session.Delete()
-	if err != nil {
-		panic(err)
-	}
+	//desired := webdriver.Capabilities{"Platform": "Mac"}
+	//required := webdriver.Capabilities{}
+	//session, err := chromedriver.NewSession(desired, required)
+	//defer session.Delete()
+	//if err != nil {
+	//	panic(err)
+	//}
 
-	notion.Login(&cfg.Login,session)
-	notion.ExportPages(pageList, session)
+	//notion.Login(&cfg.Login,session)
+	//notion.ExportPages(pageList, session)
 
 	downloadHtml(nowTime)
 
